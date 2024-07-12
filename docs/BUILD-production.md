@@ -16,79 +16,30 @@ Github リポジトリ https://github.com/procube-sandbox/example-hive-builder �
 
 コマンドの実行時に以下のようなメッセージが表示される場合がありますが、hive コマンドでは、 ansible 起動時にコンテキストディレクトリの collections を collection の検索パスに指定しますので、問題ありません。無視してください。
 
-    [WARNING]: The specified collections path '/root/hive-idaas/.hive/production/collections' is not part of the configured Ansible collections paths '... '. The installed collection won't be picked up in an Ansible run.
+    [WARNING]: The specified collections path '/root/hive-pdns/.hive/production/collections' is not part of the configured Ansible collections paths '... '. The installed collection won't be picked up in an Ansible run.
+
+### 3. パラメータを設定
+hive_email 変数にメールアドレス、domain 変数にドメイン名を設定して、 inventory/group_vars/all.yml に保存してください。 以下に例を示します。
+
+```
+hive_email: hostmaster@example.com
+domain: example.com
+```
 
 ### 4. AWS のアカウント
 hive-builder のマニュアルの[AWSの準備](https://hive-builder.readthedocs.io/ja/latest/aws.html)の章の手順 1, 2 にしたがって、アクセスキーを取得して hive の環境に設定してください。
 t3.large を 4 台起動しますので、AWS見積ツールなどで費用を把握してください。
 
+inventory/hive.yml に AWS の環境のパラメータを設定します。 services.staging.region にリージョンを指定し、services.staging.subnets の available_zone にアカウントが利用できる3つの可用性ゾーンを指定してください。 サンプルでは東京リージョンが設定されていますが、可用性ゾーンについては、 4つのうちどの3個が利用できるかがアカウントごとに異なるので、注意してください。
 
-### 5. 秘密情報ファイル(credentials.yml)の作成
-パスワードなどの秘密情報を保持するファイルを \~/.hive/credentials.yml という名前で作成してください。~/.hive というディレクトリがなければ作成してください。credentials.yml の中に以下のような形式で秘密情報を設定してください。
-
-~/.hive/credentials.yml
-
-     dockerhub_login_user: dockerhubのユーザID
-     dockerhub_login_password: dockerhubのパスワード
-     acme_email: 自分のメールアドレス
-     nssdc_client_cert: |
-        -----BEGIN CERTIFICATE-----
-        ...
-        -----END CERTIFICATE-----
-     nssdc_client_key: |
-       -----BEGIN RSA PRIVATE KEY-----
-       ...
-       -----END RSA PRIVATE KEY-----
-     ddclient:
-       ns0-idaas.procube-demo.jp:
-         name: ns0のID
-         password: ns0のパスワード
-       ns1-idaas.procube-demo.jp:
-         name: ns1のID
-         password: ns1のパスワード
-       ns2-idaas.procube-demo.jp:
-         name: ns2のID
-         password: ns2のパスワード
-
-上記ファイルの準備方法については、以下のとおりです。
-
-#### 5-1. dockerhub のアカウント
-[dockerhub](https://hub.docker.com/) のアカウントの ID/Password を　credentials.yml の中で dockerhub_login_user 変数と dockerhub_login_password 変数に設定してください。
-アカウントをお持ちでない場合は、Sign up でアカウントを作成してください。
-
-#### 5-2. NSSDC のクライアント証明書と秘密鍵
-ユニリタソフトウェア配布センタにアクセスするためのクライアント証明書と秘密鍵をcredentials.yml の中で nssdc_client_cert 変数と nssdc_client_key 変数に設定してください。
-お持ちでない場合は申請してください。証明書と鍵は PEM形式で指定してください。 | のあとに開業して2桁インデントして設定してください。
-
-#### 5-3. サブドメインの委任と ddclient の設定
-inventory/group_vars/all.yml の domain 変数にサイトのドメインの fqdn を設定してください。
-また、親ドメインに以下のレコードを追加してください。
-
-| ホスト名         | タイプ | TTL   | 値               |
-| --------------- | ------| ----- | ---------------- |
-| idaas.procube-demo.jp    |   NS  | 1時間  | ns0-idaas.procube-demo.jp |
-|                 |       |       | ns1-idaas.procube-demo.jp |
-|                 |       |       | ns2-idaas.procube-demo.jp |
-
-##### 5-3(A) 親ドメインをGoogle Domains で管理している場合
-親ドメインをGoogle Domains で管理している場合、ダイナミックDNSとして以下を登録してください。
-
-| ホスト名         | タイプ | TTL   |
-| --------------- | ------| ----- |
-| ns0-idaas.procube-demo.jp |   A  | 1分  |
-| ns1-idaas.procube-demo.jp |   A  | 1分  |
-| ns2-idaas.procube-demo.jp |   A  | 1分  |
-
-ダイナミックDNSに登録したレコードの認証情報のユーザ名とパスワードを credentials.yml の中の ddclient 変数のホストごとのオブジェクトの name 属性と password 属性に上記例に従って設定してください。
-
-##### 5-3(B) 親ドメインをGoogle Domains 以外で管理している場合
+##### 5 DNSのIPの登録
 親ドメインをGoogle Domains 以外で管理している場合、 ddclient は使用できません。 credentials.yml の中の ddclient 変数は削除し、構築後に Elastic IP を調べて、以下のレコードを登録してください。
 
 | ホスト名         | タイプ | TTL   | 値                                 |
 | --------------- | ------| ----- | ---------------------------------- |
-| ns0-idaas.procube-demo.jp |   A   | 1時間  | hive0.idaasのElastic IP |
-| ns1-idaas.procube-demo.jp |   A   | 1時間  | hive1.idaasのElastic IP |
-| ns2-idaas.procube-demo.jp |   A   | 1時間  | hive2.idaasのElastic IP |
+| ns0-pdns.procube-demo.jp |   A   | 1時間  | hive0.pdnsのElastic IP |
+| ns1-pdns.procube-demo.jp |   A   | 1時間  | hive1.pdnsのElastic IP |
+| ns2-pdns.procube-demo.jp |   A   | 1時間  | hive2.pdnsのElastic IP |
 
 
 ### 6. hive.yml ファイルの編集
@@ -125,7 +76,7 @@ hive.yml の production ステージオブジェクトの subnet 属性のサブ
     ansible-playbook -i /var/acme/hosts acme.yml
 
 このコマンドでは、テスト用のサーバ証明書が発行されます。エラーが発生した場合は、手順を中断して質問してください。
-このシェルを開いたまま https://idm.idaas.procube-demo.jp にアクセスしてサーバ証明書が信頼できない旨の警告が出ればOKです。
+このシェルを開いたまま https://idm.pdns.procube-demo.jp にアクセスしてサーバ証明書が信頼できない旨の警告が出ればOKです。
 次に本物のサーバ証明書を取得するために /var/acme/acme-vars.yml を vi で開き、最初の行を "#" でコメントアウトし、次の行のコメントアウトを外してください。
 その後、上記のシェルの続きで次のコマンドを実行してください。
 
@@ -137,7 +88,7 @@ hive.yml の production ステージオブジェクトの subnet 属性のサブ
     
 
 ### 9. 動作確認
-ホスト側のブラウザで https://idm.idaas.procube-demo.jp にアクセスし、以下のアカウントでログインし、IDaaSメタID管理システムが表示されれば成功です。
+ホスト側のブラウザで https://idm.pdns.procube-demo.jp にアクセスし、以下のアカウントでログインし、IDaaSメタID管理システムが表示されれば成功です。
 
 | 項目       | 値                                                                 |
 | ---------- | ----------------------------------------------------------------- |
