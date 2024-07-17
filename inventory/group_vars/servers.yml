@@ -1,0 +1,6 @@
+---
+hive_timezone: "Asia/Tokyo"
+# hive_locale: "ja_JP.utf8"
+hive_ntp_servers: "{{ omit if hive_provider in ['aws', 'azure', 'gcp'] else 'ntp.nict.jp' }}"
+hive_kernel_version: "4.18.0-553.5.1.el8_10"
+hive_drbd_download_url: "https://github.com/procube-open/drbd9-rpm/releases/download/Latests/drbd-9.2.7-v9.27.0-4.18.0-553.5.1.el8_10.x86_64.tar.gz"

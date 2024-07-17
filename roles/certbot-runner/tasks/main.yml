@@ -1,0 +1,13 @@
+---
+- name: install docker api and jinja2
+  pip:
+    name:
+      - docker
+      - jinja2
+      - acme==1.32.0
+      - certbot==1.32.0
+      - certbot-pdns
+      - schedule
+    state: present
+- name: install configure
+  copy: src=certbot-runner dest=/usr/sbin mode=0775

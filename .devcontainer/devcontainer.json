@@ -1,0 +1,15 @@
+{
+    "name": "Example of hive-builder",
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",  // Any generic, debian-based image.
+    "features": {
+        "ghcr.io/devcontainers/features/python:1": {
+            "version": "3.9"
+            // "toolsToInstall": "hive-builder"
+        },
+        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+        "ghcr.io/devcontainers/features/github-cli:1": {},
+        "ghcr.io/devcontainers/features/sshd:1": {
+            "version": "latest"
+        }    
+    }
+}
