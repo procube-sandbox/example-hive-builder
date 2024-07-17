@@ -30,6 +30,8 @@ class webserver:
                 '--authenticator', 'certbot-pdns:auth', 'certonly', '-d', self.labels["published_fqdn"]]
         if 'CERTBOT_EMAIL' in os.environ:
           args += ['-m', os.environ['CERTBOT_EMAIL']]
+        if 'CERTBOT_TEST_CERT' in os.environ:
+          args += ['--test-cert']
         error = certbot_main.main(args)
         if error:
           logger.error(f'error occuer in certbot new: {error}')

@@ -68,24 +68,6 @@ hive.yml の production ステージオブジェクトの subnet 属性のサブ
 
 このコマンドは80分程度かかります。
 
-### 8. サーバ証明書の取得
-以下のコマンドを実行してサーバ証明書を取得します。
-
-    hive ssh
-    dsh webgate
-    ansible-playbook -i /var/acme/hosts acme.yml
-
-このコマンドでは、テスト用のサーバ証明書が発行されます。エラーが発生した場合は、手順を中断して質問してください。
-このシェルを開いたまま https://idm.pdns.procube-demo.jp にアクセスしてサーバ証明書が信頼できない旨の警告が出ればOKです。
-次に本物のサーバ証明書を取得するために /var/acme/acme-vars.yml を vi で開き、最初の行を "#" でコメントアウトし、次の行のコメントアウトを外してください。
-その後、上記のシェルの続きで次のコマンドを実行してください。
-
-
-    rm -f /var/acme/data/*
-    ansible-playbook -i /var/acme/hosts acme.yml
-    exit
-    exit
-    
 
 ### 9. 動作確認
 ホスト側のブラウザで https://idm.pdns.procube-demo.jp にアクセスし、以下のアカウントでログインし、IDaaSメタID管理システムが表示されれば成功です。

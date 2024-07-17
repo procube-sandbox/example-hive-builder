@@ -10,6 +10,7 @@ with app.app_context():
     user = User(
         username='admin',
         plain_text_password=sys.argv[1],
+        email='admin@example.com',
         firstname='Administrator',
         role_id='Administrator')
     user.create_local_user()

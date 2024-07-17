@@ -148,6 +148,7 @@ services:
       CERTBOT_EMAIL: "{{ hive_email | default(omit) }}"
       CERTBOT_PDNS_API_KEY: "{{ db_password }}"
       CERTBOT_PDNS_BASE_URL: "http://powerdns:8081/api/v1"
+      CERTBOT_TEST_CERT: "yes"
     volumes:
     - source: letsencrypt_data
       target: /etc/letsencrypt

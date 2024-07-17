@@ -4,6 +4,8 @@
     name:
       - docker
       - jinja2
+      - acme==1.32.0
+      - certbot==1.32.0
       - certbot-pdns
       - schedule
     state: present
