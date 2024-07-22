@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import sys
-from powerdnsadmin import create_app
-from powerdnsadmin.models.user import User
-from powerdnsadmin.models.setting import Setting
+from powerdnsadmin import create_app # type: ignore
+from powerdnsadmin.models.user import User # type: ignore
+from powerdnsadmin.models.setting import Setting # type: ignore
 
 app = create_app()
 
