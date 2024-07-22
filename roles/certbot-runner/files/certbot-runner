@@ -3,12 +3,12 @@
 
 # Copyright (c) 2018 Procube Co., Ltd.
 
-import docker
+import docker # type: ignore
 import os
 import logging
 from datetime import datetime, timedelta
-from certbot import main as certbot_main
-import schedule
+from certbot import main as certbot_main # type: ignore
+import schedule # type: ignore
 import json
 import socket
 
